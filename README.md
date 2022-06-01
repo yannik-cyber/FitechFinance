@@ -1,2 +1,2 @@
-# FitechFinance
+# FintechFinance
 Kamya Projekt
