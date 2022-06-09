@@ -31,8 +31,9 @@ def get_tweets_by_searchquery(search_query, number_of_tweets):
     tweets_df = pd.DataFrame(tweets_list, columns=['datetime', 'tweet_Id', 'text', 'username', 'user_followersCount', 'user_location', 'tweet_replyCount', 'tweet_retweetCount', 'tweet_likeCount', 'tweet_quoteCount', 'tweet_lang', 'tweet_hashtags'])
     #print(tweets_df)
     search_query = re.sub(r" ", "_", search_query)
-    tweets_df.to_pickle(f'./Data/twitter/{search_query}_last_{number_of_tweets}.pkl')
-
+    path_to_safe = f'./Data/twitter/{search_query}_last_{number_of_tweets}.pkl'
+    tweets_df.to_pickle(path_to_safe)
+    return path_to_safe
 
 def get_tweets_from_user(username, number_of_tweets):
     # Creating list to append tweet data 
@@ -49,8 +50,9 @@ def get_tweets_from_user(username, number_of_tweets):
     #print(tweets_list)
     tweets_df = pd.DataFrame(tweets_list, columns=['datetime', 'tweet_Id', 'text', 'username', 'user_followersCount', 'user_location', 'tweet_replyCount', 'tweet_retweetCount', 'tweet_likeCount', 'tweet_quoteCount', 'tweet_lang', 'tweet_hashtags'])
     #print(tweets_df)
-    tweets_df.to_pickle(f'./data/{username}_last_{number_of_tweets}.pkl')
-
+    path_to_safe = f'./data/{username}_last_{number_of_tweets}.pkl'
+    tweets_df.to_pickle(path_to_safe)
+    return path_to_safe
 
 def clean_tweets(data_path, language):
     tweets = pd.read_pickle(data_path)
@@ -87,6 +89,11 @@ def clean_tweets(data_path, language):
         text = [re.sub(r'\w*\d\w*', '', w) for w in text]
         
         print(r, text)
+
+def get_tweets_for_list_of_shares(sharelist):
+    for share in sharelist:
+        clean_tweets(get_tweets_by_searchquery(f'{share} stock', 100))
+        
         
 get_tweets_by_searchquery('tesla stock', 100)
 
