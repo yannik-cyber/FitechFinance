@@ -16,7 +16,7 @@ def get_tweets_by_searchquery(search_query, number_of_tweets):
     tweets_list = []
     # Using TwitterSearchScraper to scrape data and append tweets to list
     until = dt.date.today()
-    since = until - dt.timedelta(days=5)
+    since = until - dt.timedelta(days=10)
     print(until)
     print(since)
     for i,tweet in enumerate(sntwitter.TwitterSearchScraper(f'{search_query} since:{since} until:{until}').get_items()):
@@ -56,7 +56,7 @@ def get_tweets_from_user(username, number_of_tweets):
 
 def clean_tweets(data_path, language):
     tweets = pd.read_pickle(data_path)
-    tweets = tweets.head(5)
+    #tweets = tweets.head(5)
     
     #use and configure spacy and nltk for text cleaning
     #nlp = spacy.load('en_core_web_sm')
@@ -64,6 +64,8 @@ def clean_tweets(data_path, language):
     
     # remove all tweets where language doesnt match
     tweets = tweets.loc[tweets['tweet_lang'] == language]
+    tweets.reset_index(drop=True, inplace=True)
+    tweets['clean_txt'] = ''
     #print(tweets)
     
     for r in range(len(tweets)):
@@ -88,13 +90,13 @@ def clean_tweets(data_path, language):
         # Remove numbers
         text = [re.sub(r'\w*\d\w*', '', w) for w in text]
         
+        tweets.at[r, 'clean_txt'] = text
         print(r, text)
+        tweets.to_pickle(data_path)
+        return tweets
+        
+        
 
-def get_tweets_for_list_of_shares(sharelist):
+def get_tweets_for_list_of_shares(sharelist, tweets_per_stock=100):
     for share in sharelist:
-        clean_tweets(get_tweets_by_searchquery(f'{share} stock', 100))
-        
-        
-get_tweets_by_searchquery('tesla stock', 100)
-
-clean_tweets('Data/twitter/tesla_stock_last_100.pkl','en')
+        clean_tweets(get_tweets_by_searchquery(f'{share} stock', tweets_per_stock), 'en')

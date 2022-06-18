@@ -1,4 +1,6 @@
 import pandas as pd
 
-df = pd.read_pickle('Data/twitter/tesla_stock_last_100.pkl')
+df = pd.read_pickle('Data/Stock/stock_recommendation.pkl')
+
+print(df.info())
 print(df)

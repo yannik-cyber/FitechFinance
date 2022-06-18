@@ -38,51 +38,56 @@ def getTextAnalysis(pol):
         return "Positive"
 
 def generate_sentiment_information_for_all_tweets(df):
-    df['text_cleaned'] = ''
-    df['subjectivity'] = 0.0
-    df['polarity'] = 0.0
-    df['sentiment'] = 0.0
-    #print(df.info())
-    for r in range(len(df)):
-        
-        # get the cleaned text
-        txt = df['text'].iloc[r]
-        clean_txt = cleanUpTweet(txt)
-        df.at[r, 'text_cleaned'] = clean_txt
-        
-        #get polarity
-        polarity = getTextPolarity(clean_txt)
-        df.at[r, 'polarity'] = polarity
+    if df is not None:
+        df['text_cleaned'] = ''
+        df['subjectivity'] = 0.0
+        df['polarity'] = 0.0
+        df['sentiment'] = 0.0
+        #print(df.info())
+        for r in range(len(df)):
+            
+            # get the cleaned text
+            txt = df['text'].iloc[r]
+            clean_txt = cleanUpTweet(txt)
+            df.at[r, 'text_cleaned'] = clean_txt
+            
+            #get polarity
+            polarity = getTextPolarity(clean_txt)
+            df.at[r, 'polarity'] = polarity
 
-        #get subjectivity
-        subjectivity = getTextSubjectivity(clean_txt)
-        df.at[r, 'subjectivity'] = subjectivity
-        
-        #print(df.iloc[r])
-        
-        #get sentiment
-        sentiment = getTextAnalysis(polarity)
-        df.at[r, 'sentiment'] = sentiment
-        
-        
-    print(df[['text_cleaned', 'polarity', 'subjectivity', 'sentiment']])
-    return df
+            #get subjectivity
+            subjectivity = getTextSubjectivity(clean_txt)
+            df.at[r, 'subjectivity'] = subjectivity
+            
+            #print(df.iloc[r])
+            
+            #get sentiment
+            sentiment = getTextAnalysis(polarity)
+            df.at[r, 'sentiment'] = sentiment
+            
+            
+        print(df[['text_cleaned', 'polarity', 'subjectivity', 'sentiment']])
+        return df
 
 def get_mean_sentiment(df):
-    df = df.loc[df['subjectivity'] > 0.75]
-    df.reset_index(drop=True, inplace=True)
-    print(df[['text_cleaned', 'polarity', 'subjectivity', 'sentiment']])
-    sentiments = df['polarity'].tolist()
-    mean_sentiment = np.mean(sentiments)
-    print(mean_sentiment)
+    if df is not None:
+        df = df.loc[df['subjectivity'] >= 0.5]
+        if df.empty:
+            mean_sentiment = np.nan
+            print(mean_sentiment)
+        else:
+            df.reset_index(drop=True, inplace=True)
+            print(df[['text_cleaned', 'polarity', 'subjectivity', 'sentiment']])
+            sentiments = df['polarity'].tolist()
+            mean_sentiment = np.mean(sentiments)
+            print(mean_sentiment)
+        return mean_sentiment
         
         
 
-df = pd.read_pickle('Data/twitter/tesla_stock_last_100.pkl')
-
-
-
-get_mean_sentiment(generate_sentiment_information_for_all_tweets(df))
+#df = pd.read_pickle('Data/twitter/General_Dynamics_Corporation_stock_last_300.pkl')
+#print(df)
+#get_mean_sentiment(generate_sentiment_information_for_all_tweets(df))
     
     
         
